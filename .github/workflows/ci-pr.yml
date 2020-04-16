@@ -28,9 +28,9 @@ jobs:
         fi
     - name: get commit message
       run: |
-        echo "::set-output name=commitmsg::$(git log --no-merges -1 --oneline)"
+        echo "::set-env name=commitmsg::$(git log --no-merges -1 --oneline)"
     - name: show commit message
-      run : echo $commitmsg
+      run : echo "$commitmsg"
 
     - name: step1
       if: contains( env.commitmsg , 'skip' )
