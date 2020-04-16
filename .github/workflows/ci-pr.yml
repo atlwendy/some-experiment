@@ -30,12 +30,13 @@ jobs:
       run: |
         echo "::set-env name=commitmsg::$(git log --no-merges -1 --oneline)"
         echo "::set-env name=commitmsg2::$(git log --format=%B -n 1 ${{ github.event.after }})"
+        echo "::set-env name=messagec::$(git log --format=%B -n 1 322f95415df148deeda3b739c35f72c09f26a8dc)"
     - name: show commit message
       run : |
         echo env.commitmsg
         echo env.commitmsg2
     - name: step1
-      if: contains( env.commitmsg , 'skip' )
+      if: contains( env.messagec , 'skip' )
       run: echo hello
     - name: echo the value
       run: echo "${{github.event.head_commit.message}}"
