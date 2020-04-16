@@ -19,10 +19,6 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
     - name: Set SHOULD_RUN flag
       run: |
         if [[ "${{github.event.head_commit.message}}" =~ (skip\ ci|ci\ skip) ]]; then
@@ -30,6 +26,26 @@ jobs:
         else
           echo "::set-env name=SHOULD_RUN::true"
         fi
+    # Runs a single command using the runners shell
+    - name: should it be skipped?
+      env:
+        COMMIT_FILTER: "skip-ci"
+      run: |
+        # Get last commit message
+        readonly local last_commit_log=$(git log -1 --pretty=format:"%s")
+        echo "last commit log: $last_commit_log"
+
+        readonly local filter_count=$(echo "$last_commit_log" | grep -c "$COMMIT_FILTER" )
+        echo "number of occurence of '$COMMIT_FILTER' in '$last_commit_log': $filter_count"
+
+        if [[ "$filter_count" -eq 0 ]]; then
+          echo "all good, continue"
+        else
+          echo "the last commit log \"$last_commit_log\" contains \"$COMMIT_FILTER\", stopping"
+          exit 78
+        fi
+    - name: echo the value
+      run: echo "${{github.event.head_commit.message}}"
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
@@ -44,5 +60,3 @@ jobs:
       if: env.SHOULD_RUN == 'true'
     - if: env.SHOULD_RUN == 'true' && steps.cache_node_modules.outputs.cache-hit != 'true'
       run: yarn install --frozen-lockfile --non-interactive
-    - name: Build
-      run: yarn build
