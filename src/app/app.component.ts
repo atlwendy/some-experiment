@@ -1,21 +1,7 @@
 import { Component, ViewChild, OnInit, AfterViewInit, ViewEncapsulation } from '@angular/core';
 import { RetrieveDataService } from 'src/services/retrieve-data';
-import { merge, pipe, of } from 'rxjs';
+import { merge, of } from 'rxjs';
 import { switchMap, map, startWith, catchError } from 'rxjs/operators';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4maps from '@amcharts/amcharts4/maps';
-import {
-  TsChart,
-  tsChartChordTypeCheck,
-  tsChartMapTypeCheck,
-  tsChartPieTypeCheck,
-  tsChartRadarTypeCheck,
-  tsChartSankeyTypeCheck,
-  tsChartTreeTypeCheck,
-  TsChartVisualizationOptions,
-  tsChartXYTypeCheck,
-} from '@terminus/ui/chart';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -27,8 +13,6 @@ export interface DisplayData {
   Population: Number;
   AffectedRate: Number;
 }
-
-const XY_DATA: Record<string, any>[] = [];
 
 @Component({
   selector: 'app-root',
@@ -42,22 +26,8 @@ export class AppComponent implements AfterViewInit {
   public cData;
   public result;
   public population;
-  private chart!: am4charts.XYChart;
   public dataSource = new MatTableDataSource<DisplayData>([]);
   displayedDataColumns: string[] = ['Rank', 'Country', 'Cases', 'Deaths', 'FatalityRate', 'Population', 'AffectedRate'];
-
-  
-
-  // public visualizationOptions: TsChartVisualizationOptions[] = [
-  //   'xy',
-  //   'pie',
-  //   'map',
-  //   'radar',
-  //   'tree',
-  //   'sankey',
-  //   'chord',
-  // ];
-  // visualization: TsChartVisualizationOptions = this.visualizationOptions[0];
 
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
@@ -67,25 +37,7 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-    setTimeout(() => {
-      this.dataSource.sort = this.sort;
-    }, 20);
   }
-
-  // public getResult() {
-  //   this.dataService.getCountryData()
-  //     .subscribe((d) => {
-  //       this.result = d.table.slice(0,20);
-  //       this.result.forEach((r) => {
-  //         r['rate'] = (parseFloat(r['Deaths'].replace(/,/g, '')) * 100 / parseFloat(r['Cases'].replace(/,/, ''))).toFixed(1);
-  //       })
-  //       console.log('this.result: ', this.result);
-  //       // this.chartCreated(this.cData);
-  //     })
-  //   setTimeout(() => {
-  //     this.getPopulation();
-  //   }, 100)
-  // }
 
   public getResult = () => {
     merge()
@@ -137,69 +89,8 @@ export class AppComponent implements AfterViewInit {
       
   }
 
-
   public trackByFn(index): number {
     return index;
   }
-
-  // chartCreated(chart: TsChart) {
-  //   console.log('chart: ', chart);
-  //   this.cData = chart;
-  //   this.setChartData(chart, this.visualization);
-  // }
-
-
-  // setChartData(chart: TsChart, type: TsChartVisualizationOptions) {
-    
-  //   /**
-  //    * XY
-  //    */
-  //   if (tsChartXYTypeCheck(chart)) {
-  //     chart.data = this.result;
-  //     console.log('chart.data: ', chart.data);
-
-  //     const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);
-  //     dateAxis.renderer.grid.template.location = 0;
-
-  //     const valueAxis = chart.yAxes.push(new am4charts.ValueAxis() as any);
-  //     if (valueAxis.tooltip) {
-  //       valueAxis.tooltip.disabled = true;
-  //     }
-  //     valueAxis.renderer.minWidth = 35;
-
-  //     const series = (chart.series as any).push(new am4charts.LineSeries() as any);
-  //     series.dataFields.dateX = 'date';
-  //     series.dataFields.valueY = 'value';
-
-  //     series.tooltipText = '{valueY.value}';
-  //     chart.cursor = new am4charts.XYCursor() as any;
-
-  //     const scrollbarX = new am4charts.XYChartScrollbar();
-  //     scrollbarX.series.push(series);
-  //     chart.scrollbarX = scrollbarX as any;
-  //     this.createSeries('visitSessionCount', 'View Through Visit Count', 'vertical');
-  //     this.createSeries('trackedConversionCount', 'View Through Conversion Count', 'vertical');
-
-  //   }
-  // }
-
-  // public createSeries(field: string, name: string, pointerOrientation: am4core.PointerOrientation): any {
-  //   // Set up series
-  //   const series = this.chart.series.push(new am4charts.ColumnSeries() as any);
-  //   series.name = name;
-  //   series.dataFields.valueY = field;
-  //   series.dataFields.dateX = 'dateUtc';
-  //   series.sequencedInterpolation = true;
-  //   series.groupFields.valueY = 'sum';
-
-  //   // Configure columns
-  //   series.columns.template.align = 'left';
-  //   series.columns.template.width = am4core.percent(100);
-  //   series.tooltipText = '[bold]{name}[/]\n[font-size:14px]{dateX}: {valueY}';
-  //   if (series.tooltip) {
-  //     series.tooltip.pointerOrientation = pointerOrientation;
-  //   }
-  // }
-
 
 }
