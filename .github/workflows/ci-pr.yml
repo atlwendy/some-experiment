@@ -30,9 +30,11 @@ jobs:
     - name: get commit message
       run: |
         echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
+        echo "::set-output name=message::$(git log --no-merges -1 --oneline)"
     - name: show commit message
       run : |
         echo env.commitmsg
+        echo steps.log.outputs.message
     - name: step1
       if: contains( env.commitmsg , 'skip' )
       run: echo hello
