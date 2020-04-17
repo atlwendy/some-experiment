@@ -7,6 +7,7 @@ name: Ci Pr
 on:
   pull_request:
     branches: [ master ]
+    types: [opened, synchronize, reopened]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -14,7 +15,6 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci')"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -30,11 +30,15 @@ jobs:
     - name: get commit message
       run: |
         echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
-        echo "::set-output name=message::$(git log --no-merges -1 --oneline)"
+        echo "::set-env name=message::$(tooling/find-message.sh)"
     - name: show commit message
       run : |
         echo env.commitmsg
-        echo steps.log.outputs.message
+        echo env.message
+    - name: get pull request message
+      run: |
+        echo ${{ github.event.pull_request.head.sha }}
+        echo ${{ github.event.pull_request.head.ref }}
     - name: step1
       if: contains( env.commitmsg , 'skip' )
       run: echo hello

@@ -4,6 +4,7 @@ import { merge, of } from 'rxjs';
 import { switchMap, map, startWith, catchError } from 'rxjs/operators';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 export interface DisplayData {
   Country: string;
@@ -23,6 +24,7 @@ export interface DisplayData {
 export class AppComponent implements AfterViewInit {
 
   public title = 'covid-graph';
+  public message = 'Loading...';
   public cData;
   public result;
   public population;
@@ -37,6 +39,9 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    // setTimeout(() => {
+    //   this.getResult();
+    // }, 2000);
   }
 
   public getResult = () => {

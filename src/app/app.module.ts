@@ -22,6 +22,7 @@ import { RetrieveDataService } from 'src/services/retrieve-data';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { SpinnerModule } from './spinner/spinner.module';
 
 export const amChartsFactory = (): TsAmChartsToken => ({
   core: am4core,
@@ -42,6 +43,7 @@ export const amChartsFactory = (): TsAmChartsToken => ({
     HttpClientModule,
     MatTableModule,
     MatSortModule,
+    SpinnerModule,
     TsButtonModule,
     TsChartModule,
     TsPipesModule,
