@@ -7,6 +7,7 @@ name: Ci Pr
 on:
   pull_request:
     branches: [ master ]
+    types: [opened, synchronize, reopened]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,10 +20,6 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
     - name: Set SHOULD_RUN flag
       run: |
         if [[ "${{github.event.head_commit.message}}" =~ (skip\ ci|ci\ skip) ]]; then
@@ -30,6 +27,23 @@ jobs:
         else
           echo "::set-env name=SHOULD_RUN::true"
         fi
+    - name: get commit message
+      run: |
+        echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
+        echo "::set-env name=message::$(tooling/find-message.sh)"
+    - name: show commit message
+      run : |
+        echo env.commitmsg
+        echo env.message
+    - name: get pull request message
+      run: |
+        echo ${{ github.event.pull_request.head.sha }}
+        echo ${{ github.event.pull_request.head.ref }}
+    - name: step1
+      if: contains( env.commitmsg , 'skip' )
+      run: echo hello
+    - name: echo the value
+      run: echo "${{github.event.head_commit.message}}"
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
@@ -44,5 +58,3 @@ jobs:
       if: env.SHOULD_RUN == 'true'
     - if: env.SHOULD_RUN == 'true' && steps.cache_node_modules.outputs.cache-hit != 'true'
       run: yarn install --frozen-lockfile --non-interactive
-    - name: Build
-      run: yarn build
