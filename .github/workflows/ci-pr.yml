@@ -38,16 +38,25 @@ jobs:
     - name: get pull request message
       run: |
         echo ${{ github.event.pull_request.head.sha }}
-        echo ${{ github.event.pull_request.head.ref }}
+        echo ::set-env name=branchname::${{github.head_ref}}
+    - name: set branch to be cloned
+      run: |
+        echo ::set-env name=branch-url::${{ github.event.pull_request.head.repo.branches_url }} ${{ env.branchname }}
     - name: get branch url
       run: |
-        echo ${{ github.event.pull_request.head.branch_url }}
-        echo ::set-env name=branch::$(git clone --single-branch --branch ${{ github.event.pull_request.head.branch_url }})
+        echo ${{ github.event.pull_request.head.repo.git_commits_url }}
+        echo ::set-env name=branch::$(git clone -b ${{ env.branchname }} https://github.com/${{github.repository}}/)
     - name: step1
       if: contains( env.commitmsg , 'skip' )
       run: echo hello
     - name: echo the value
       run: echo "${{github.event.head_commit.message}}"
+    - name: get commit history
+      run: |
+        cd some-experiment
+        echo ::set-env name=last-commit::$(git log -1 --pretty=format:"%s")
+    - name: last commit message
+      run: echo ${{ env.last-commit }}
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
