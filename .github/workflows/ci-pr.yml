@@ -27,30 +27,13 @@ jobs:
         else
           echo "::set-env name=SHOULD_RUN::true"
         fi
-    - name: get commit message
-      run: |
-        echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
-        echo "::set-env name=message::$(tooling/find-message.sh)"
-    - name: show commit message
-      run : |
-        echo env.commitmsg
-        echo env.message
     - name: get pull request message
       run: |
         echo ${{ github.event.pull_request.head.sha }}
         echo ::set-env name=branchname::${{github.head_ref}}
-    - name: set branch to be cloned
-      run: |
-        echo ::set-env name=branch-url::${{ github.event.pull_request.head.repo.branches_url }} ${{ env.branchname }}
     - name: get branch url
       run: |
-        echo ${{ github.event.pull_request.head.repo.git_commits_url }}
-        echo ::set-env name=branch::$(git clone -b ${{ env.branchname }} https://github.com/${{github.repository}}/)
-    - name: step1
-      if: contains( env.commitmsg , 'skip' )
-      run: echo hello
-    - name: echo the value
-      run: echo "${{github.event.head_commit.message}}"
+        git clone -b ${{ env.branchname }} https://github.com/${{github.repository}}/
     - name: get commit history
       run: |
         cd some-experiment
