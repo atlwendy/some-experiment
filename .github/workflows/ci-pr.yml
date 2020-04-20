@@ -20,26 +20,20 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - name: Set SHOULD_RUN flag
+    - name: get last commit message
       run: |
-        if [[ "${{github.event.head_commit.message}}" =~ (skip\ ci|ci\ skip) ]]; then
-          echo "::set-env name=SHOULD_RUN::false"
-        else
-          echo "::set-env name=SHOULD_RUN::true"
-        fi
-    - name: get pull request message
-      run: |
-        echo ${{ github.event.pull_request.head.sha }}
-        echo ::set-env name=branchname::${{github.head_ref}}
-    - name: get branch url
-      run: |
-        git clone -b ${{ env.branchname }} https://github.com/${{github.repository}}/
-    - name: get commit history
-      run: |
+        git clone -b ${{ github.head_ref }} https://github.com/${{github.repository}}/
         cd some-experiment
         echo ::set-env name=last-commit::$(git log -1 --pretty=format:"%s")
     - name: last commit message
       run: echo ${{ env.last-commit }}
+    - name: Set SHOULD_RUN flag
+      run: |
+        if [[ "${{env.last-commit}}" =~ (skip\ ci|ci\ skip) ]]; then
+          echo "::set-env name=SHOULD_RUN::false"
+        else
+          echo "::set-env name=SHOULD_RUN::true"
+        fi
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
