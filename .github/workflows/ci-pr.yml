@@ -18,12 +18,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    - name: test my action
+      uses: atlwendy/retrieve-commit-messages-from-pr@master
+      with:
+        github: ${{ github }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: get last commit message
       run: |
         git clone -b ${{ github.head_ref }} https://github.com/${{github.repository}}/
-        cd some-experiment
+        cd ${{ github.event.pull_request.head.repo.name }}
         echo ::set-env name=last-commit::$(git log -1 --pretty=format:"%s")
     - name: last commit message
       run: echo ${{ env.last-commit }}
