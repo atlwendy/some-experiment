@@ -7,7 +7,6 @@ name: Ci Pr
 on:
   pull_request:
     branches: [ master ]
-    types: [opened, synchronize, reopened]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -21,7 +20,9 @@ jobs:
     - name: test my action
       uses: atlwendy/retrieve-commit-messages-from-pr@master
       with:
-        github: ${{ github }}
+        branch: ${{ github.head_ref }}
+        description: ${{ github.event.pull_request.head.repo.name }}
+        repository: ${{ github.repository }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - name: get last commit message
