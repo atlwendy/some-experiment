@@ -18,27 +18,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: test my action
+      id: skip
       uses: atlwendy/retrieve-commit-messages-from-pr@master
-      with:
-        branch: ${{ github.head_ref }}
-        description: ${{ github.event.pull_request.head.repo.name }}
-        repository: ${{ github.repository }}
+    - name: get my action output
+      run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.match }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - name: get last commit message
-      run: |
-        git clone -b ${{ github.head_ref }} https://github.com/${{github.repository}}/
-        cd ${{ github.event.pull_request.head.repo.name }}
-        echo ::set-env name=last-commit::$(git log -1 --pretty=format:"%s")
-    - name: last commit message
-      run: echo ${{ env.last-commit }}
-    - name: Set SHOULD_RUN flag
-      run: |
-        if [[ "${{env.last-commit}}" =~ (skip\ ci|ci\ skip) ]]; then
-          echo "::set-env name=SHOULD_RUN::false"
-        else
-          echo "::set-env name=SHOULD_RUN::true"
-        fi
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
