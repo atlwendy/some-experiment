@@ -19,7 +19,7 @@ jobs:
     steps:
     - name: test my action
       id: skip
-      uses: atlwendy/retrieve-commit-messages-from-pr@master
+      uses: atlwendy/retrieve-commit-messages-from-pr@v1
     - name: get my action output
       run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.match }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
