@@ -23,18 +23,19 @@ jobs:
     - name: get my action output
       run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.match }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - name: echo env
+      run: echo ${{ env.SHOULD_RUN }}
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
-          node-version: 12.x
+        node-version: 12.x
       if: env.SHOULD_RUN == 'true'
     - name: Cache node_modules
       id: cache_node_modules
       uses: actions/cache@v1
       with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
       if: env.SHOULD_RUN == 'true'
     - if: env.SHOULD_RUN == 'true' && steps.cache_node_modules.outputs.cache-hit != 'true'
       run: yarn install --frozen-lockfile --non-interactive
