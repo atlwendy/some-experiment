@@ -1,12 +1,10 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Ci Pr
+name: Ci Push
 
 # Controls when the action will run. Triggers the workflow pull request
 # events only for the master branch
-on:
-  pull_request:
-    branches: [ master ]
+on: push
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
