@@ -23,11 +23,13 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: echo env
       run: echo ${{ env.SHOULD_RUN }}
+    - name: get author
+      run: echo ::set-env name=author::${{ github.event.pusher.name }}
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-      if: env.SHOULD_RUN == 'true'
+      if: env.SHOULD_RUN == 'true' && env.author != 'atlwendy'
     - name: Cache node_modules
       id: cache_node_modules
       uses: actions/cache@v1

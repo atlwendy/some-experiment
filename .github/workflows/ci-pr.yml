@@ -19,17 +19,21 @@ jobs:
     steps:
     - name: test my action
       id: skip
-      uses: atlwendy/retrieve-commit-messages-from-pr@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: atlwendy/retrieve-commit-messages-from-pr@add-github-token
     - name: get my action output
       run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.shouldRun }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: get pr author
+      run: echo ::set-env name=author::${{ github.event.pull_request.user.login }}
     - name: echo env
       run: echo ${{ env.SHOULD_RUN }}
     - name: Set up Node
       uses: actions/setup-node@v1
       with:
         node-version: 12.x
-      if: env.SHOULD_RUN == 'true'
+      if: env.SHOULD_RUN == 'true' && env.author != 'atlwendy'
     - name: Cache node_modules
       id: cache_node_modules
       uses: actions/cache@v1
