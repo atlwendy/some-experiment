@@ -17,7 +17,8 @@ import {
   TsAmChartsToken,
   TsChartModule,
 } from '@terminus/ui/chart';
-import { TsPipesModule } from '@terminus/ui/pipes'
+import { TsPipesModule } from '@terminus/ui/pipes';
+import { TsTabsModule } from '@terminus/ui/tabs';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
@@ -47,6 +48,7 @@ export const amChartsFactory = (): TsAmChartsToken => ({
     TsButtonModule,
     TsChartModule,
     TsPipesModule,
+    TsTabsModule,
   ],
   providers: [
     RetrieveDataService,

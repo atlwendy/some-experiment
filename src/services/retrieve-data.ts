@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class RetrieveDataService {
@@ -11,11 +10,17 @@ export class RetrieveDataService {
         this.defaultHeaders = new HttpHeaders();
     }
 
-    getCountryData(): Observable<any> {
-        const href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
-        const data = this.http.get(href);
-        console.log('data: ', data);
-        return data
+    getRawData(type: string): Observable<any> {
+        let href: string;
+        switch (type) {
+          case 'country':
+            href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
+            break;
+          case 'georgia':
+            href = 'https://covidtracking.com/api/v1/states/GA/daily.json';
+            break;
+        }
+        return this.http.get(href);
     }
 
     getCountryPopulation(countries): Object[] {
@@ -44,29 +49,29 @@ const COUNTRIES = [
     'China',
     'India',
     'United States of America',
-//     'Russia',
-//     'Mexico',
-//     'Japan',
-//     'Germany',
-//     'France',
-//     'Thailan',
-//     'United Kingdom',
-//     'Italy',
-//     'South Africa',
-//     'South Korea',
-//     'Colombia',
-//     'Spain',
-//     'Argentina',
-//     'Algeria',
-//     'Ukraine',
-//     'Iraq',
-//     'Poland',
-//     'Canada',
-//     'Saudi Arabia',
-//     'Malaysia',
-//     'Australia',
-//     'Taiwan',
-//     'Niger',
-//     'Netherlands',
-//     'Switzerland',
+    'Russia',
+    'Mexico',
+    'Japan',
+    'Germany',
+    'France',
+    'Thailan',
+    'United Kingdom',
+    'Italy',
+    'South Africa',
+    'South Korea',
+    'Colombia',
+    'Spain',
+    'Argentina',
+    'Algeria',
+    'Ukraine',
+    'Iraq',
+    'Poland',
+    'Canada',
+    'Saudi Arabia',
+    'Malaysia',
+    'Australia',
+    'Taiwan',
+    'Niger',
+    'Netherlands',
+    'Switzerland',
 ]
