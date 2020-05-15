@@ -19,8 +19,6 @@ jobs:
     steps:
     - name: test my action
       id: skip
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
       uses: atlwendy/retrieve-commit-messages-from-pr@add-github-token
     - name: get my action output
       run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.shouldRun }}
