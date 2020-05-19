@@ -24,6 +24,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { SpinnerModule } from './spinner/spinner.module';
+import { GraphModule } from './graph/graph.module';
 
 export const amChartsFactory = (): TsAmChartsToken => ({
   core: am4core,
@@ -45,6 +46,7 @@ export const amChartsFactory = (): TsAmChartsToken => ({
     MatTableModule,
     MatSortModule,
     SpinnerModule,
+    GraphModule,
     TsButtonModule,
     TsChartModule,
     TsPipesModule,

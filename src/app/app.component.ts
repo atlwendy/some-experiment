@@ -9,6 +9,7 @@ import * as am4core from '@amcharts/amcharts4/core';
 
 import { TsTabCollectionComponent } from '@terminus/ui/tabs';
 import { TsChart, tsChartXYTypeCheck } from '@terminus/ui/chart';
+import { GraphComponent } from './graph/graph.module';
 
 export interface DisplayData {
   Country: string;
@@ -65,6 +66,9 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('tabCollection', { static: true })
   public tabCollection!: TsTabCollectionComponent;
+
+  @ViewChild('graph')
+  public graph!: GraphComponent;
 
   constructor(
     private dataService: RetrieveDataService,
@@ -180,33 +184,33 @@ export class AppComponent implements AfterViewInit {
   }
 
   public getGeorgiaChart(chart: TsChart) {
-    
-    // if (tsChartXYTypeCheck(chart)) {
-    //   this.chartTab = true;
-    //   // chart.data = this.georgiaResult;
-    //   chart.data = [{date: '02/01/2020', count: 100}, {date: '02/02/2020', count: 200}]
-    //   console.log('chart: ', chart);
+    console.log('tsChartXYType:', tsChartXYTypeCheck(chart));
+    if (tsChartXYTypeCheck(chart)) {
+      // this.chartTab = true;
+      // chart.data = this.georgiaResult;
+      chart.data = [{date: '02/01/2020', count: 100}, {date: '02/02/2020', count: 200}]
+      console.log('chart: ', chart);
 
-    //   const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);
-    //   dateAxis.renderer.grid.template.location = 0;
+      const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);
+      dateAxis.renderer.grid.template.location = 0;
 
-    //   const valueAxis = chart.yAxes.push(new am4charts.ValueAxis() as any);
-    //   if (valueAxis.tooltip) {
-    //     valueAxis.tooltip.disabled = true;
-    //   }
-    //   valueAxis.renderer.minWidth = 35;
+      const valueAxis = chart.yAxes.push(new am4charts.ValueAxis() as any);
+      if (valueAxis.tooltip) {
+        valueAxis.tooltip.disabled = true;
+      }
+      valueAxis.renderer.minWidth = 35;
 
-    //   const series = (chart.series as any).push(new am4charts.LineSeries() as any);
-    //   series.dataFields.dateX = 'date';
-    //   series.dataFields.valueY = 'value';
+      const series = (chart.series as any).push(new am4charts.LineSeries() as any);
+      series.dataFields.dateX = 'date';
+      series.dataFields.valueY = 'value';
 
-    //   series.tooltipText = '{valueY.value}';
-    //   chart.cursor = new am4charts.XYCursor() as any;
+      series.tooltipText = '{valueY.value}';
+      chart.cursor = new am4charts.XYCursor() as any;
 
-    //   const scrollbarX = new am4charts.XYChartScrollbar();
-    //   scrollbarX.series.push(series);
-    //   this.aChart = chart;
-    // }
+      const scrollbarX = new am4charts.XYChartScrollbar();
+      scrollbarX.series.push(series);
+      this.aChart = chart;
+    }
   }
 
   ngOnDestroy() {

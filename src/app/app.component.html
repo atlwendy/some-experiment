@@ -1,3 +1,4 @@
+<div [hidden]="!chartTab">
 <ts-tab-collection tsVerticalSpacing="large--2">
     <ts-tab label="Country">
       <ts-button
@@ -121,6 +122,12 @@
     </ts-tab>
 </ts-tab-collection>
 
-<div [hidden]="countryResult || georgiaResult">
+<div [hidden]="countryResult || georgiaResult || !chartTab">
   <app-spinner></app-spinner>
+</div>
+</div>
+
+<div [hidden]="chartTab">
+  <h3>APP GRAPH</h3>
+  <app-graph></app-graph>
 </div>
