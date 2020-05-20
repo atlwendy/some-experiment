@@ -41,7 +41,7 @@ export class AppComponent implements AfterViewInit {
   public title = 'covid-graph';
   public message = 'Loading...';
   public countryTableTitle = 'Country Data Table';
-  public georgiaTableTitle = 'Georgia State Data';
+  
   public visualization = 'xy';
   public cData;
   public chartTab = false;
