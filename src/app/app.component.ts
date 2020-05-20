@@ -138,6 +138,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   public getGeorgiaResult = () => {
+    this.chartTab = false;
     merge()
       .pipe(
         startWith({}),
@@ -184,33 +185,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   public getGeorgiaChart(chart: TsChart) {
-    console.log('tsChartXYType:', tsChartXYTypeCheck(chart));
-    if (tsChartXYTypeCheck(chart)) {
-      // this.chartTab = true;
-      // chart.data = this.georgiaResult;
-      chart.data = [{date: '02/01/2020', count: 100}, {date: '02/02/2020', count: 200}]
-      console.log('chart: ', chart);
-
-      const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);
-      dateAxis.renderer.grid.template.location = 0;
-
-      const valueAxis = chart.yAxes.push(new am4charts.ValueAxis() as any);
-      if (valueAxis.tooltip) {
-        valueAxis.tooltip.disabled = true;
-      }
-      valueAxis.renderer.minWidth = 35;
-
-      const series = (chart.series as any).push(new am4charts.LineSeries() as any);
-      series.dataFields.dateX = 'date';
-      series.dataFields.valueY = 'value';
-
-      series.tooltipText = '{valueY.value}';
-      chart.cursor = new am4charts.XYCursor() as any;
-
-      const scrollbarX = new am4charts.XYChartScrollbar();
-      scrollbarX.series.push(series);
-      this.aChart = chart;
-    }
+    this.chartTab = true;
   }
 
   ngOnDestroy() {
