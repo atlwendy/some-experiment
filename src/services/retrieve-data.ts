@@ -12,13 +12,10 @@ export class RetrieveDataService {
 
     getRawData(type: string): Observable<any> {
         let href: string;
-        switch (type) {
-          case 'country':
+        if (type === 'country') {
             href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
-            break;
-          case 'georgia':
-            href = 'https://covidtracking.com/api/v1/states/GA/daily.json';
-            break;
+        } else {
+            href = `https://covidtracking.com/api/v1/states/${type}/daily.json`;
         }
         return this.http.get(href);
     }

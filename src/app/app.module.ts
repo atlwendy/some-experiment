@@ -18,6 +18,7 @@ import {
   TsChartModule,
 } from '@terminus/ui/chart';
 import { TsPipesModule } from '@terminus/ui/pipes';
+import { TsSelectionListModule } from '@terminus/ui/selection-list';
 import { TsTabsModule } from '@terminus/ui/tabs';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import { HttpClientModule } from '@angular/common/http';
@@ -52,6 +53,7 @@ export const amChartsFactory = (): TsAmChartsToken => ({
     TsButtonModule,
     TsChartModule,
     TsPipesModule,
+    TsSelectionListModule,
     TsTabsModule,
   ],
   providers: [

@@ -24,7 +24,7 @@ export class GraphComponent {
       .pipe(
         startWith({}),
         switchMap(() => {
-          return this.dataService.getRawData('georgia');
+          return this.dataService.getRawData('GA');
         }),
         map((d) => this.formatData(d)),
         catchError((e) => {

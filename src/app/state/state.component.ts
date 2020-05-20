@@ -1,10 +1,14 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { GADisplayData } from '../app.component';
 import { RetrieveDataService } from 'src/services/retrieve-data';
-import { merge, of } from 'rxjs';
+import { merge, of, BehaviorSubject, Observable } from 'rxjs';
 import { startWith, switchMap, catchError, map } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { TsChart } from '@terminus/ui/chart/';
+import { FormControl } from '@angular/forms';
+import { State, STATES } from './data';
+import { TsSelectionListChange } from '@terminus/ui/selection-list';
+import { untilComponentDestroyed } from '@terminus/ngx-tools/utilities';
 
 
 @Component({
@@ -12,12 +16,14 @@ import { TsChart } from '@terminus/ui/chart/';
   templateUrl: './state.component.html',
   styleUrls: ['./state.component.scss']
 })
-export class StateComponent {
+export class StateComponent implements OnInit, OnDestroy{
   public chartTab;
   public georgiaResult;
   public countryResult;
+  public stateControl = new FormControl('');
+  public singleState;
   public georgiaDataSource = new MatTableDataSource<GADisplayData>([]);
-  public georgiaTableTitle = 'Georgia State Data';
+  public georgiaTableTitle: Observable<string>;
   displayedGADataColumns: string[] = [
     'date',
     'totalConfirmed',
@@ -26,20 +32,40 @@ export class StateComponent {
     'totalTested',
     'deathIncrease',
     'positiveIncrease',
-    'hospitalizedIncrease'
-  ]
+    'hospitalizedIncrease',
+    'confirmedRate',
+  ];
+
+  // State Data
+  public states = STATES.slice();
+  // Selection Results
+  public simpleMultipleResults: Observable<State[]> | undefined;
+  public simpleResults: Observable<State[]> | undefined;
+  // Async
+  public simpleAsync = false;
+  
 
   constructor(
     private dataService: RetrieveDataService,
   ) { }
 
-  public getGeorgiaResult = () => {
+  public ngOnInit() {
+    this.simpleResults = this.simpleQuery$
+      .pipe(
+        untilComponentDestroyed(this),
+        map(query => this.queryStates(query)),
+      );
+  }
+
+  public ngOnDestroy(): void {};
+
+  public getGeorgiaResult = (state) => {
     this.chartTab = false;
     merge()
       .pipe(
         startWith({}),
         switchMap(() => {
-          return this.dataService.getRawData('georgia');
+          return this.dataService.getRawData(state);
         }),
         map((d) => {
           return this.formatData(d);
@@ -67,6 +93,7 @@ export class StateComponent {
       formatted['deathIncrease'] = d['deathIncrease'];
       formatted['positiveIncrease'] = d['positiveIncrease'];
       formatted['hospitalizedIncrease'] = d['hospitalizedIncrease'];
+      formatted['confirmedRate'] = (parseFloat(d['positive']) * 100 / parseFloat(d['totalTestResults'])).toFixed(2);
       result.push(formatted);
     })
     return result;
@@ -78,6 +105,38 @@ export class StateComponent {
 
   public getGeorgiaChart(chart: TsChart) {
     this.chartTab = true;
+  }
+  public simpleQuery$ = new BehaviorSubject('');
+
+  public queryHasChanged(query: string): void {
+    this.simpleQuery$.next(query);
+  }
+
+  public formatter(value: State): string {
+    return value.name;
+  }
+
+  public duplicate(e: TsSelectionListChange): void {
+    console.log(`duplicate selection: `, e);
+  }
+
+  public selectionChange(e: TsSelectionListChange) {
+    this.getGeorgiaResult(e.value[0]['abbreviation']);
+    this.georgiaTableTitle.subscribe(e.value[0]['name']);
+    console.log(`selection change: `, e);
+  }
+
+  public queryStates(query: string): State[] {
+    query = query.toLowerCase();
+
+    if (query) {
+      const letters = query.split('').map(l => `${l}.*`).join('');
+      const regex = new RegExp(letters, 'ig');
+      return this.states.filter(s => !!s.name.match(regex));
+    }
+    // if no query, return first 10 states
+    return STATES.slice(0, 54);
+
   }
   
 
