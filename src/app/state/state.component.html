@@ -1,6 +1,5 @@
 <ts-selection-list
-  label="Select states"
-  hint="Begin typing to search.."
+  label="Select a state"
   [allowUserInput]="false"
   [formControl]="stateControl"
   [showProgress]="simpleAsync"
@@ -20,12 +19,12 @@
 
 <ts-button
   [isDisabled]="!georgiaResult"
-  (click)="getGeorgiaChart($event)"
+  (click)="getStateChart()"
 >
 Get Chart
 </ts-button>
 <div class="result" [hidden]="!georgiaResult || chartTab">
-    <h2>{{ georgiaTableTitle | async }}</h2>
+    <h2>{{ georgiaTableTitle  }}</h2>
   <table mat-table [dataSource]="georgiaDataSource" matSort class="mat-elevation-z8">
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef>Date</th>
@@ -72,12 +71,14 @@ Get Chart
       <td mat-cell *matCellDef="let r">{{r.confirmedRate }}%</td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedGADataColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedGADataColumns;"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedStateDataColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedStateDataColumns;"></tr>
 
   </table>
 </div>
 
-<div [hidden]="!chartTab">
-  <app-graph></app-graph>
+<div *ngIf="chartTab">
+  <app-graph
+    [state]="selectedState"
+  ></app-graph>
 </div>

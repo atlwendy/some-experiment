@@ -17,24 +17,30 @@ export class GraphComponent {
 
   public visualization='xy';
   public georgiaResult;
-  public aChart;
 
-  public getGeorgiaResult = (chart) => {
-    merge()
-      .pipe(
-        startWith({}),
-        switchMap(() => {
-          return this.dataService.getRawData('GA');
-        }),
-        map((d) => this.formatData(d)),
-        catchError((e) => {
-          console.log('error: ', e);
-          return of();
+  @Input()
+  public state: string;
+
+  public getStateResult = (chart) => {
+    console.log('this.state: ', this.state);
+    if (this.state) {
+      merge()
+        .pipe(
+          startWith({}),
+          switchMap(() => {
+            console.log('this.state: ', this.state);
+            return this.dataService.getRawData(this.state);
+          }),
+          map((d) => this.formatData(d)),
+          catchError((e) => {
+            console.log('error: ', e);
+            return of();
+          })
+        ).subscribe((data: Array<GADisplayData>) => {
+          chart.data = data;
+          this.getStateChart(chart);
         })
-      ).subscribe((data: Array<GADisplayData>) => {
-        chart.data = data;
-        this.getGeorgiaChart(chart);
-      })
+      }
   }
 
   constructor(
@@ -70,7 +76,7 @@ export class GraphComponent {
     return d.slice(0,4) + '-' + d.slice(4,6) + '-' + d.slice(6,8);
   }
 
-  public getGeorgiaChart(chart: TsChart) {
+  public getStateChart(chart: TsChart) {
     if (tsChartXYTypeCheck(chart)) {
 
       const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);

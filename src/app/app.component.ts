@@ -52,16 +52,6 @@ export class AppComponent implements AfterViewInit {
   public georgiaDataSource = new MatTableDataSource<GADisplayData>([]);
   public aChart;
   displayedDataColumns: string[] = ['Rank', 'Country', 'Cases', 'Deaths', 'FatalityRate', 'Population', 'AffectedRate'];
-  displayedGADataColumns: string[] = [
-    'date',
-    'totalConfirmed',
-    'totalHospitalized',
-    'fatality',
-    'totalTested',
-    'deathIncrease',
-    'positiveIncrease',
-    'hospitalizedIncrease'
-  ]
 
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild('tabCollection', { static: true })
@@ -72,17 +62,11 @@ export class AppComponent implements AfterViewInit {
 
   constructor(
     private dataService: RetrieveDataService,
-    private zone: NgZone,
   ) { }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.georgiaDataSource.sort = this.sort;
-    
-    this.zone.runOutsideAngular(() => {
-      let chart = am4core.create("chartdiv", am4charts.XYChart);
-      this.aChart = chart;
-    });
   }
 
   public getResult = () => {
@@ -133,67 +117,15 @@ export class AppComponent implements AfterViewInit {
         this.countryResult = data;
         this.georgiaResult = null;
         this.dataSource.data = data;
-      });
-      
-  }
-
-  public getGeorgiaResult = () => {
-    this.chartTab = false;
-    merge()
-      .pipe(
-        startWith({}),
-        switchMap(() => {
-          return this.dataService.getRawData('georgia');
-        }),
-        map((d) => {
-          return this.formatData(d);
-        }),
-        catchError((e) => {
-          console.log('error: ', e);
-          return of();
-        })
-      ).subscribe((data: Array<GADisplayData>) => {
-        this.georgiaResult = data;
-        this.countryResult = null;
-        this.georgiaDataSource.data = data;
-      })
+      });  
   }
 
   public trackByFn(index): number {
     return index;
   }
 
-  public formatData(data): Array<object> {
-    const result = []
-    data.map((d) => {
-      let formatted = {};
-      formatted['date'] = new Date(this.dateFormat(d['date'].toString()));
-      formatted['totalConfirmed'] = d['positive'];
-      formatted['totalHospitalized'] = d['hospitalizedCumulative'];
-      formatted['fatality'] = d['death'];
-      formatted['totalTested'] = d['totalTestResults'];
-      formatted['deathIncrease'] = d['deathIncrease'];
-      formatted['positiveIncrease'] = d['positiveIncrease'];
-      formatted['hospitalizedIncrease'] = d['hospitalizedIncrease'];
-      result.push(formatted);
-    })
-    return result;
-  }
-
-  public dateFormat(d) {
-    return d.slice(0,4) + '-' + d.slice(4,6) + '-' + d.slice(6,8);
-  }
-
-  public getGeorgiaChart(chart: TsChart) {
+  public getStateChart(chart: TsChart) {
     this.chartTab = true;
-  }
-
-  ngOnDestroy() {
-    this.zone.runOutsideAngular(() => {
-      if (this.aChart) {
-        this.aChart.dispose();
-      }
-    });
   }
 
 }

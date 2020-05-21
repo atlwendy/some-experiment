@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { GADisplayData } from '../app.component';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import { merge, of, BehaviorSubject, Observable } from 'rxjs';
@@ -23,8 +23,9 @@ export class StateComponent implements OnInit, OnDestroy{
   public stateControl = new FormControl('');
   public singleState;
   public georgiaDataSource = new MatTableDataSource<GADisplayData>([]);
-  public georgiaTableTitle: Observable<string>;
-  displayedGADataColumns: string[] = [
+  public georgiaTableTitle: string;
+  public selectedState: string;
+  displayedStateDataColumns: string[] = [
     'date',
     'totalConfirmed',
     'totalHospitalized',
@@ -59,7 +60,7 @@ export class StateComponent implements OnInit, OnDestroy{
 
   public ngOnDestroy(): void {};
 
-  public getGeorgiaResult = (state) => {
+  public getStateResult = (state) => {
     this.chartTab = false;
     merge()
       .pipe(
@@ -93,7 +94,7 @@ export class StateComponent implements OnInit, OnDestroy{
       formatted['deathIncrease'] = d['deathIncrease'];
       formatted['positiveIncrease'] = d['positiveIncrease'];
       formatted['hospitalizedIncrease'] = d['hospitalizedIncrease'];
-      formatted['confirmedRate'] = (parseFloat(d['positive']) * 100 / parseFloat(d['totalTestResults'])).toFixed(2);
+      formatted['confirmedRate'] = d['totalTestResults'] === 0 ? 0 : (parseFloat(d['positive']) * 100 / parseFloat(d['totalTestResults'])).toFixed(2);
       result.push(formatted);
     })
     return result;
@@ -103,7 +104,7 @@ export class StateComponent implements OnInit, OnDestroy{
     return d.slice(0,4) + '-' + d.slice(4,6) + '-' + d.slice(6,8);
   }
 
-  public getGeorgiaChart(chart: TsChart) {
+  public getStateChart() {
     this.chartTab = true;
   }
   public simpleQuery$ = new BehaviorSubject('');
@@ -121,9 +122,10 @@ export class StateComponent implements OnInit, OnDestroy{
   }
 
   public selectionChange(e: TsSelectionListChange) {
-    this.getGeorgiaResult(e.value[0]['abbreviation']);
-    this.georgiaTableTitle.subscribe(e.value[0]['name']);
-    console.log(`selection change: `, e);
+    const abbreviation = e.value[0]['abbreviation'];
+    this.getStateResult(abbreviation);
+    this.georgiaTableTitle = `${e.value[0]['name']} State Table`;
+    this.selectedState = abbreviation;
   }
 
   public queryStates(query: string): State[] {
@@ -134,7 +136,7 @@ export class StateComponent implements OnInit, OnDestroy{
       const regex = new RegExp(letters, 'ig');
       return this.states.filter(s => !!s.name.match(regex));
     }
-    // if no query, return first 10 states
+    // if no query, return all states
     return STATES.slice(0, 54);
 
   }
