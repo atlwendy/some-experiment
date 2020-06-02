@@ -9,6 +9,7 @@ import { TsSelectionListModule } from '@terminus/ui/selection-list';
 import { GraphModule } from '../graph/graph.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TsOptionModule } from '@terminus/ui/option';
+import { TsTabsModule } from '@terminus/ui/tabs';
 
 export * from './state.component';
 
@@ -24,6 +25,7 @@ export * from './state.component';
     TsButtonModule,
     TsChartModule,
     TsOptionModule,
+    TsTabsModule,
     TsSelectionListModule,
   ],
   exports:[ StateComponent ],

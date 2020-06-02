@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, ViewEncapsulation, NgZone } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, ViewEncapsulation, NgZone, ElementRef, Input } from '@angular/core';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import { merge, of } from 'rxjs';
 import { switchMap, map, startWith, catchError } from 'rxjs/operators';

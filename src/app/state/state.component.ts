@@ -1,14 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { GADisplayData } from '../app.component';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import { merge, of, BehaviorSubject, Observable } from 'rxjs';
 import { startWith, switchMap, catchError, map } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
-import { TsChart } from '@terminus/ui/chart/';
 import { FormControl } from '@angular/forms';
 import { State, STATES } from './data';
 import { TsSelectionListChange } from '@terminus/ui/selection-list';
 import { untilComponentDestroyed } from '@terminus/ngx-tools/utilities';
+import { GraphComponent } from '../graph/graph.module';
 
 
 @Component({
@@ -25,6 +25,9 @@ export class StateComponent implements OnInit, OnDestroy{
   public georgiaDataSource = new MatTableDataSource<GADisplayData>([]);
   public georgiaTableTitle: string;
   public selectedState: string;
+  public selectedStateStream = new BehaviorSubject('');
+  public theme = 'accent';
+  public tabAlignment = 'center';
   displayedStateDataColumns: string[] = [
     'date',
     'totalConfirmed',
@@ -44,7 +47,9 @@ export class StateComponent implements OnInit, OnDestroy{
   public simpleResults: Observable<State[]> | undefined;
   // Async
   public simpleAsync = false;
-  
+
+  @ViewChild('graphComponent')
+  public graphComponent!: GraphComponent;
 
   constructor(
     private dataService: RetrieveDataService,
@@ -61,7 +66,6 @@ export class StateComponent implements OnInit, OnDestroy{
   public ngOnDestroy(): void {};
 
   public getStateResult = (state) => {
-    this.chartTab = false;
     merge()
       .pipe(
         startWith({}),
@@ -83,7 +87,7 @@ export class StateComponent implements OnInit, OnDestroy{
   }
 
   public formatData(data): Array<object> {
-    const result = []
+    const result = [];
     data.map((d) => {
       let formatted = {};
       formatted['date'] = new Date(this.dateFormat(d['date'].toString()));
@@ -126,6 +130,7 @@ export class StateComponent implements OnInit, OnDestroy{
     this.getStateResult(abbreviation);
     this.georgiaTableTitle = `${e.value[0]['name']} State Table`;
     this.selectedState = abbreviation;
+    this.selectedStateStream.next(abbreviation);
   }
 
   public queryStates(query: string): State[] {
@@ -140,6 +145,5 @@ export class StateComponent implements OnInit, OnDestroy{
     return STATES.slice(0, 54);
 
   }
-  
 
 }

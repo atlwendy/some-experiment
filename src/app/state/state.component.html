@@ -17,68 +17,74 @@
   </ts-option>
 </ts-selection-list>
 
-<ts-button
-  [isDisabled]="!georgiaResult"
-  (click)="getStateChart()"
+<ts-tab-collection
+  [tabAlignment]="tabAlignment"
+  [theme]="theme"
+  tsVerticalSpacing="large--2"
 >
-Get Chart
-</ts-button>
-<div class="result" [hidden]="!georgiaResult || chartTab">
-    <h2>{{ georgiaTableTitle  }}</h2>
-  <table mat-table [dataSource]="georgiaDataSource" matSort class="mat-elevation-z8">
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef>Date</th>
-      <td mat-cell *matCellDef="let r">{{ r.date | date:'shortDate'}}</td>
-    </ng-container>
+  <ts-tab label="Table">
+      <div class="result" *ngIf="selectedState">
+        <h2>{{ georgiaTableTitle  }}</h2>
+        <table mat-table [dataSource]="georgiaDataSource" matSort class="mat-elevation-z8">
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let r">{{ r.date | date:'shortDate'}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="totalConfirmed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed</th>
-      <td mat-cell *matCellDef="let r">{{r.totalConfirmed | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="totalConfirmed">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed</th>
+            <td mat-cell *matCellDef="let r">{{r.totalConfirmed | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="totalHospitalized">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Hospitalized</th>
-      <td mat-cell *matCellDef="let r">{{r.totalHospitalized | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="totalHospitalized">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Hospitalized</th>
+            <td mat-cell *matCellDef="let r">{{r.totalHospitalized | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="fatality">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Fatalities</th>
-      <td mat-cell *matCellDef="let r">{{r.fatality | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="fatality">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fatalities</th>
+            <td mat-cell *matCellDef="let r">{{r.fatality | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="totalTested">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Tested</th>
-      <td mat-cell *matCellDef="let r">{{r.totalTested | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="totalTested">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tested</th>
+            <td mat-cell *matCellDef="let r">{{r.totalTested | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="deathIncrease">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Fatality Increase</th>
-      <td mat-cell *matCellDef="let r">{{r.deathIncrease | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="deathIncrease">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fatality Increase</th>
+            <td mat-cell *matCellDef="let r">{{r.deathIncrease | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="positiveIncrease">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed Increase</th>
-        <td mat-cell *matCellDef="let r">{{r.positiveIncrease | number}}</td>
-      </ng-container>
+          <ng-container matColumnDef="positiveIncrease">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed Increase</th>
+              <td mat-cell *matCellDef="let r">{{r.positiveIncrease | number}}</td>
+            </ng-container>
 
-    <ng-container matColumnDef="hospitalizedIncrease">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Hospitalized Increase</th>
-      <td mat-cell *matCellDef="let r">{{r.hospitalizedIncrease | number}}</td>
-    </ng-container>
+          <ng-container matColumnDef="hospitalizedIncrease">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Hospitalized Increase</th>
+            <td mat-cell *matCellDef="let r">{{r.hospitalizedIncrease | number}}</td>
+          </ng-container>
 
-    <ng-container matColumnDef="confirmedRate">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed Rate</th>
-      <td mat-cell *matCellDef="let r">{{r.confirmedRate }}%</td>
-    </ng-container>
+          <ng-container matColumnDef="confirmedRate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed Rate</th>
+            <td mat-cell *matCellDef="let r">{{r.confirmedRate }}%</td>
+          </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedStateDataColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedStateDataColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedStateDataColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedStateDataColumns;"></tr>
 
-  </table>
-</div>
+        </table>
+      </div>
+  </ts-tab>
+  <ts-tab label="Chart">
+    <div *ngIf="selectedState">
+      <app-graph
+        [state]="selectedStateStream | async"
+      ></app-graph>
+    </div>
+  </ts-tab>
+</ts-tab-collection>
 
-<div *ngIf="chartTab">
-  <app-graph
-    [state]="selectedState"
-  ></app-graph>
-</div>
+
+

@@ -1,6 +1,7 @@
-<div class="graph" >
+<div class="graph">
+  <h2>{{ state }} chart</h2>
   <ts-chart
     [visualization]="visualization"
-    (chartInitialized)="getStateResult($event)"
+    (chartInitialized)="chartCreated($event)"
   ></ts-chart>
 </div>

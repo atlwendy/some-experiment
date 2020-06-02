@@ -1,6 +1,6 @@
 import { Component, Input, NgZone } from '@angular/core';
-import { merge, of } from 'rxjs';
-import { startWith, switchMap, catchError, map } from 'rxjs/operators';
+import { merge, of, BehaviorSubject } from 'rxjs';
+import { startWith, switchMap, catchError, map, take } from 'rxjs/operators';
 import { GADisplayData } from '../app.component';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import * as am4charts from '@amcharts/amcharts4/charts';
@@ -15,20 +15,62 @@ import { TsChart, tsChartXYTypeCheck } from '@terminus/ui/chart';
 })
 export class GraphComponent {
 
-  public visualization='xy';
-  public georgiaResult;
+  public visualization = 'xy';
+  private chart!: am4charts.XYChart;
+  private stateData;
 
   @Input()
-  public state: string;
+  public set state(r: string) {
+    if (!r) {
+      return;
+    }
+    this._state = r;
+    this.initializeChartData();
+    console.log('this._state: ', this._state, '; this.chart: ', this.chart);
+  }
+  public get state(): string {
+    return this._state;
+  }
+  private _state: string;
 
-  public getStateResult = (chart) => {
-    console.log('this.state: ', this.state);
-    if (this.state) {
+  @Input()
+  public stateStream;
+
+  public chartCreated(chart: TsChart) {
+    console.log('chart created');
+    this.getStateResult(chart, this.state);
+  }
+
+  public getStateResult = (chart, state) => {
+    console.log('chart: ', chart);
+    this.chart = chart;
+    if (state) {
       merge()
         .pipe(
           startWith({}),
           switchMap(() => {
-            console.log('this.state: ', this.state);
+            return this.dataService.getRawData(state);
+          }),
+          map((d) => this.formatData(d)),
+          catchError((e) => {
+            console.log('error: ', e);
+            return of();
+          })
+        ).subscribe((data: Array<GADisplayData>) => {
+          chart.data = data;
+          this.stateData = data;
+          console.log('get data, draw chart');
+          this.getStateChart(chart);
+        })
+    }
+  }
+
+  public getStateArrays = (state, chart) => {
+    if (state) {
+      merge()
+        .pipe(
+          startWith({}),
+          switchMap(() => {
             return this.dataService.getRawData(this.state);
           }),
           map((d) => this.formatData(d)),
@@ -40,7 +82,7 @@ export class GraphComponent {
           chart.data = data;
           this.getStateChart(chart);
         })
-      }
+    }
   }
 
   constructor(
@@ -51,7 +93,6 @@ export class GraphComponent {
   ngAfterViewInit() {
     this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
-      this.aChart = chart;
     });
   }
 
@@ -78,7 +119,7 @@ export class GraphComponent {
 
   public getStateChart(chart: TsChart) {
     if (tsChartXYTypeCheck(chart)) {
-
+      this.chart = chart as any;
       const dateAxis = chart.xAxes.push(new am4charts.DateAxis() as any);
       dateAxis.renderer.grid.template.location = 0;
 
@@ -121,6 +162,24 @@ export class GraphComponent {
 
       //add legend
       chart.legend = new am4charts.Legend();
+
+      this.initializeChartData();
     }
+  }
+
+  private initializeChartData(): void {
+    if (!this.chart || !this.state) {
+      return;
+    }
+    // AmCharts seems to hold onto the LabelBullets when data is refreshed, the only
+    // way i've found to get around this is to clear the series data and reinit it.
+    // We also want to reset the colors so they don't constantly change.
+    this.chart.colors.reset();
+    if (this.chart.series.length) {
+      for (const s of this.chart.series) {
+        s.bulletsContainer.disposeChildren();
+      }
+    }
+
   }
 }
