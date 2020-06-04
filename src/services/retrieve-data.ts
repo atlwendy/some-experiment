@@ -17,7 +17,7 @@ export class RetrieveDataService {
             href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
             break;
           case 'georgia':
-            href = 'https://covidtracking.com/api/v1/states/GA/daily.json';
+            href = 'https://covidtracking.com/api/v1/states/ga/daily.json';
             break;
         }
         return this.http.get(href);
