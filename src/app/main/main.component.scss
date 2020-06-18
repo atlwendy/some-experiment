@@ -1,0 +1,48 @@
+.mat-form-field, .mat-table {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+ts-input {
+  display: inline-block;
+  width: 60%;
+  margin-right: 20px;
+  background-color: white;
+}
+
+.result {
+    margin: 3em;
+}
+
+button {
+  margin-left: 20px;
+}
+
+table {
+  width: 100%;
+  
+}
+
+th.mat-sort-header, td.mat-cell {
+  text-align: center;
+}
+
+mat-header-cell {
+  display:flex;
+  justify-content:flex-end;
+}
+.mat-header-container,
+.mat-sort-header-container {
+  display:flex;
+  justify-content:center;
+}
+
+td img {
+  max-height: 100px;
+}
+.mat-app-background {
+  background-color: #fafafa;
+  color: rgba(0,0,0,0.87);
+}
+.basic-container {
+  padding: 30px;
+}

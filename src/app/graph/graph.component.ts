@@ -1,7 +1,7 @@
 import { Component, Input, NgZone } from '@angular/core';
 import { merge, of } from 'rxjs';
 import { startWith, switchMap, catchError, map } from 'rxjs/operators';
-import { GADisplayData } from '../app.component';
+import { GADisplayData } from '../main/main.component';
 import { RetrieveDataService } from 'src/services/retrieve-data';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import * as am4core from '@amcharts/amcharts4/core';
