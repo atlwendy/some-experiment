@@ -17,14 +17,17 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+ 
     - name: test my action
       id: skip
-      uses: atlwendy/retrieve-commit-messages-from-pr@add-github-token
+      uses: atlwendy/retrieve-commit-messages-from-pr@v2
     - name: get my action output
       run: echo ::set-env name=SHOULD_RUN::${{ steps.skip.outputs.shouldRun }}
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: get pr author
       run: echo ::set-env name=author::${{ github.event.pull_request.user.login }}
+    - name: test out
+      run: pushd "/"
     - name: echo env
       run: echo ${{ env.SHOULD_RUN }}
     - name: Set up Node
