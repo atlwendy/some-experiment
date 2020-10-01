@@ -85,7 +85,61 @@ export class AppComponent implements AfterViewInit {
     });
   }
 
-  public getResult = () => {
+  // This was for the country data from api end point of https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread
+  // public getResult = () => {
+  //   this.chartTab = false;
+  //   merge()
+  //     .pipe(
+  //       startWith({}),
+  //       switchMap(() => {
+  //         return this.dataService.getRawData('country')
+  //       }),
+  //       switchMap((cases) => {
+  //         return this.dataService.getAllCountryData()
+  //         .pipe(
+  //           map((population: Array<Object>) => {
+  //             cases.table.concat(population);
+  //             let newData = [];
+  //             cases.table.forEach((c) => {
+  //               population.map((p) => {
+  //                 if (c.Country === p['name'] || p['name'].includes(c.Country)) {
+  //                   newData.push({
+  //                     Country: c.Country,
+  //                     Cases: c.Cases,
+  //                     Deaths: c.Deaths,
+  //                     Population: p['population'],
+  //                     FatalityRate: (parseFloat(c['Deaths'].replace(/,/g, '')) * 100 / parseFloat(c['Cases'].replace(/,/g, ''))).toFixed(1),
+  //                     AffectedRate: (parseFloat(c['Cases'].replace(/,/g, '')) * 100 / parseFloat(p['population'])).toFixed(4),
+  //                   })
+  //                 }
+  //               })
+  //             })
+              
+  //             // newData = Math.max.apply(Math, newData.map(function(o) { return o['Population']; }))
+  //             newData.filter((d, index, self) => {
+  //               index === self.findIndex((t) => {
+  //                 return (t.Country === d.Country && t.Population > d.Population)
+  //               } )
+  //             });
+  //             newData = newData.filter((n) => n.AffectedRate < 10);
+  //             return newData;
+  //           })
+  //         )
+  //       }),
+  //       catchError(() => {
+  //         console.warn('API errors');
+  //         return of([]);
+  //       }),
+  //     ).subscribe((data) => {
+  //       this.countryResult = data;
+  //       this.georgiaResult = null;
+  //       this.dataSource.data = data;
+  //     });
+      
+  // }
+
+  // This is for the country api end point at: https://www.ncovid19.it/api/v1/AllReports.php
+   public getResult = () => {
     this.chartTab = false;
     merge()
       .pipe(
@@ -97,31 +151,31 @@ export class AppComponent implements AfterViewInit {
           return this.dataService.getAllCountryData()
           .pipe(
             map((population: Array<Object>) => {
-              cases.table.concat(population);
+              const resultInTable = cases.reports[0].table[0].concat(population);
               let newData = [];
-              cases.table.forEach((c) => {
+              resultInTable.forEach((c) => {
                 population.map((p) => {
-                  if (c.Country === p['name'] || p['name'].includes(c.Country)) {
+                  if (c.Country === p['name'] || p['name'].includes(c.Country) || (c.Country === 'USA' && p['population'] > 300000000 && p['population'] < 1000000000)) {
                     newData.push({
                       Country: c.Country,
-                      Cases: c.Cases,
-                      Deaths: c.Deaths,
+                      Cases: c.TotalCases,
+                      Deaths: c.TotalDeaths,
                       Population: p['population'],
-                      FatalityRate: (parseFloat(c['Deaths'].replace(/,/g, '')) * 100 / parseFloat(c['Cases'].replace(/,/g, ''))).toFixed(1),
-                      AffectedRate: (parseFloat(c['Cases'].replace(/,/g, '')) * 100 / parseFloat(p['population'])).toFixed(4),
+                      FatalityRate: (parseFloat(c['TotalDeaths'].replace(/,/g, '')) * 100 / parseFloat(c['TotalCases'].replace(/,/g, ''))).toFixed(1),
+                      AffectedRate: (parseFloat(c['TotalCases'].replace(/,/g, '')) * 100 / parseFloat(p['population'])).toFixed(4),
                     })
                   }
                 })
               })
-              
+
               // newData = Math.max.apply(Math, newData.map(function(o) { return o['Population']; }))
               newData.filter((d, index, self) => {
                 index === self.findIndex((t) => {
-                  return (t.Country === d.Country && t.Population > d.Population)
+                  return (t.Country === d.Country && (t.Population > d.Population))
                 } )
               });
               newData = newData.filter((n) => n.AffectedRate < 10);
-              return newData;
+              return Object.values(newData.reduce((acc,cur)=>Object.assign(acc,{[cur.Country]:cur}),{}));
             })
           )
         }),
@@ -129,12 +183,12 @@ export class AppComponent implements AfterViewInit {
           console.warn('API errors');
           return of([]);
         }),
-      ).subscribe((data) => {
+      ).subscribe((data: DisplayData[]) => {
         this.countryResult = data;
         this.georgiaResult = null;
         this.dataSource.data = data;
       });
-      
+
   }
 
   public getGeorgiaResult = () => {

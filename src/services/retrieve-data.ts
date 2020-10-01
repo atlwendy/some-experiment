@@ -14,7 +14,8 @@ export class RetrieveDataService {
         let href: string;
         switch (type) {
           case 'country':
-            href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
+            //href = 'https://covid19-server.chrismichael.now.sh/api/v1/CountriesWhereCoronavirusHasSpread';
+            href = 'https://www.ncovid19.it/api/v1/AllReports.php'
             break;
           case 'georgia':
             href = 'https://covidtracking.com/api/v1/states/ga/daily.json';
