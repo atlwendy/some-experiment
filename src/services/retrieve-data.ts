@@ -18,7 +18,8 @@ export class RetrieveDataService {
             href = 'https://www.ncovid19.it/api/v1/AllReports.php'
             break;
           case 'georgia':
-            href = 'https://covidtracking.com/api/v1/states/ga/daily.json';
+            const proxyurl = "https://cors-anywhere.herokuapp.com/";
+            href = proxyurl + 'https://covidtracking.com/api/v1/states/ga/daily.json';
             break;
         }
         return this.http.get(href);
