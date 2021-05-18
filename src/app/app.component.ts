@@ -151,11 +151,11 @@ export class AppComponent implements AfterViewInit {
           return this.dataService.getAllCountryData()
           .pipe(
             map((population: Array<Object>) => {
-              const resultInTable = cases.reports[0].table[0].concat(population);
+              const resultInTable = cases.reports[0].table[0];
               let newData = [];
               resultInTable.forEach((c) => {
                 population.map((p) => {
-                  if (c.Country === p['name'] || p['name'].includes(c.Country) || (c.Country === 'USA' && p['population'] > 300000000 && p['population'] < 1000000000)) {
+                  if (c.Country === p['name'] || p['name'].includes(c.Country) || (c.Country === 'USA' && p['name'] === 'United States of America')) {
                     newData.push({
                       Country: c.Country,
                       Cases: c.TotalCases,
@@ -174,7 +174,7 @@ export class AppComponent implements AfterViewInit {
                   return (t.Country === d.Country && (t.Population > d.Population))
                 } )
               });
-              newData = newData.filter((n) => n.AffectedRate < 10);
+              newData = newData.filter((n) => n.AffectedRate < 100);
               return Object.values(newData.reduce((acc,cur)=>Object.assign(acc,{[cur.Country]:cur}),{}));
             })
           )
