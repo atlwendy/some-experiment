@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import * as pData from '../data/worldpopulation.json';
+
 
 @Injectable()
 export class RetrieveDataService {
@@ -25,6 +27,8 @@ export class RetrieveDataService {
         return this.http.get(href);
     }
 
+    /* Retrieve population data from API end point */
+
     getCountryPopulation(countries): Object[] {
         const href = 'https://restcountries.eu/rest/v2/name/';
         let countryPopulation: Object[] = [{name: '', population: ''}];
@@ -37,7 +41,6 @@ export class RetrieveDataService {
                 const point = Math.max.apply(Math, result.map(function(o) { return o['population']; }))
                 countryPopulation.push({"name": name, "population": point});
             })
-            
         })
         return countryPopulation;
     }
@@ -45,35 +48,42 @@ export class RetrieveDataService {
     getAllCountryData() {
         return this.http.get('https://restcountries.eu/rest/v2/all/');
     }
+
+    /* Retrieve population data from local json */
+
+    getCountryPopulationLocal() {
+      const d = (pData as any).default;
+      return of(d);
+    }
 }
 
 const COUNTRIES = [
     'China',
-    'India',
-    'United States of America',
-    'Russia',
-    'Mexico',
-    'Japan',
-    'Germany',
-    'France',
-    'Thailan',
-    'United Kingdom',
-    'Italy',
-    'South Africa',
-    'South Korea',
-    'Colombia',
-    'Spain',
-    'Argentina',
-    'Algeria',
-    'Ukraine',
-    'Iraq',
-    'Poland',
-    'Canada',
-    'Saudi Arabia',
-    'Malaysia',
-    'Australia',
-    'Taiwan',
-    'Niger',
-    'Netherlands',
-    'Switzerland',
+    'India',
+    'United States of America',
+    'Russia',
+    'Mexico',
+    'Japan',
+    'Germany',
+    'France',
+    'Thailan',
+    'United Kingdom',
+    'Italy',
+    'South Africa',
+    'South Korea',
+    'Colombia',
+    'Spain',
+    'Argentina',
+    'Algeria',
+    'Ukraine',
+    'Iraq',
+    'Poland',
+    'Canada',
+    'Saudi Arabia',
+    'Malaysia',
+    'Australia',
+    'Taiwan',
+    'Niger',
+    'Netherlands',
+    'Switzerland',
 ]

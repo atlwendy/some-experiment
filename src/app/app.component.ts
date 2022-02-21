@@ -78,7 +78,6 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
     this.georgiaDataSource.sort = this.sort;
-    
     this.zone.runOutsideAngular(() => {
       let chart = am4core.create("chartdiv", am4charts.XYChart);
       this.aChart = chart;
@@ -114,7 +113,6 @@ export class AppComponent implements AfterViewInit {
   //                 }
   //               })
   //             })
-              
   //             // newData = Math.max.apply(Math, newData.map(function(o) { return o['Population']; }))
   //             newData.filter((d, index, self) => {
   //               index === self.findIndex((t) => {
@@ -135,7 +133,7 @@ export class AppComponent implements AfterViewInit {
   //       this.georgiaResult = null;
   //       this.dataSource.data = data;
   //     });
-      
+
   // }
 
   // This is for the country api end point at: https://www.ncovid19.it/api/v1/AllReports.php
@@ -148,19 +146,19 @@ export class AppComponent implements AfterViewInit {
           return this.dataService.getRawData('country')
         }),
         switchMap((cases) => {
-          return this.dataService.getAllCountryData()
+          return this.dataService.getCountryPopulationLocal()
           .pipe(
             map((population: Array<Object>) => {
               const resultInTable = cases.reports[0].table[0];
               let newData = [];
               resultInTable.forEach((c) => {
                 population.map((p) => {
-                  if (c.Country === p['name'] || p['name'].includes(c.Country) || (c.Country === 'USA' && p['name'] === 'United States of America')) {
+                  if (c.Country === p['country'] || p['country'].includes(c.Country) || (c.Country === 'USA' && p['name'] === 'United States of America')) {
                     newData.push({
                       Country: c.Country,
                       Cases: c.TotalCases,
                       Deaths: c.TotalDeaths,
-                      Population: p['population'],
+                      Population: parseInt(p['population']).toLocaleString('en-US'),
                       FatalityRate: (parseFloat(c['TotalDeaths'].replace(/,/g, '')) * 100 / parseFloat(c['TotalCases'].replace(/,/g, ''))).toFixed(1),
                       AffectedRate: (parseFloat(c['TotalCases'].replace(/,/g, '')) * 100 / parseFloat(p['population'])).toFixed(4),
                     })
@@ -179,8 +177,8 @@ export class AppComponent implements AfterViewInit {
             })
           )
         }),
-        catchError(() => {
-          console.warn('API errors');
+        catchError((e) => {
+          console.warn('API errors', e);
           return of([]);
         }),
       ).subscribe((data: DisplayData[]) => {
