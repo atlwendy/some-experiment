@@ -28,7 +28,7 @@
     "@terminus/ngx-tools": "^7.4.0",
     "@terminus/ui": "^18.1.0",
     "date-fns": "^2.11.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
